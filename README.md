@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aldersgate College - Medical Services Queue System
 
-## Getting Started
+A real-time patient queuing system designed for Aldersgate College Medical Services. This application manages patient flow through various clinics (OBGYNE, Dental, X-Ray, etc.) using a dual-interface approach: a **TV Dashboard** for patients and a **Control Console** for staff.
 
-First, run the development server:
+## 🚀 Key Features
 
+### 🏥 Patient Dashboard (TV Display)
+- **Real-time Updates:** The screen updates instantly when staff calls a patient (powered by Supabase Realtime).
+- **Smart Estimation:** Wait times are calculated based on the specific service (e.g., Dental queue doesn't affect OBGYNE wait time).
+- **Visuals:** 3x2 Grid layout showing 6 clinics per page with auto-pagination.
+- **Audio Alerts:** Plays a chime sound when a patient is called.
+- **Sorting & Filtering:** Patients can filter the list by Department/Service or sort by Name/Ticket Number.
+
+### 👨‍⚕️ Staff Console & Triage
+- **Triage System:** Staff can manually register walk-in patients and assign them to specific departments.
+- **Strict Designation:** The system prevents calling a patient to the wrong room (e.g., Room 1 [OBGYNE] can only call OBGYNE patients).
+- **Queue Management:**
+  - **Call:** Assigns patient to room.
+  - **Finish:** Marks transaction as complete.
+  - **No Show:** Removes patient from queue.
+  - **Return to Queue:** Places patient back in line but keeps their original priority (timestamp).
+- **Room Controls:** Filter the view to see specific rooms or the global queue.
+
+## 🛠️ Tech Stack
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Database:** Supabase (PostgreSQL)
+- **Styling:** Tailwind CSS
+- **Realtime:** Supabase Channels
+
+---
+
+## 📦 Getting Started
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone [https://github.com/YOUR_USERNAME/aldersgate-queue.git](https://github.com/YOUR_USERNAME/aldersgate-queue.git)
+cd aldersgate-queue
