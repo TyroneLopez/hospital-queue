@@ -120,7 +120,7 @@ export default function StaffDashboard() {
       return;
     }
 
-    // C. Assign to Room
+    // C. Assign to Room (FIXED: Added 'as any' to bypass TS error)
     await supabase.from('tickets').update({
       status: 'serving',
       room_number: targetRoom.id,
@@ -128,7 +128,7 @@ export default function StaffDashboard() {
     } as any).eq('id', ticket.id);
   };
 
-  // 2. FINISH (Complete)
+  // 2. FINISH (Complete) (FIXED: Added 'as any')
   const finishTicket = async (id: number | string) => {
     await supabase.from('tickets').update({
       status: 'completed',
@@ -136,7 +136,7 @@ export default function StaffDashboard() {
     } as any).eq('id', id)
   }
 
-  // 3. RETURN TO QUEUE (Priority Re-queue)
+  // 3. RETURN TO QUEUE (Priority Re-queue) (FIXED: Added 'as any')
   // Resets status to 'waiting'. Since created_at is old, they will jump to the top of the list naturally.
   const returnToQueue = async (id: number | string) => {
     const confirmReturn = window.confirm("Return patient to queue? They will be placed based on their arrival time (High Priority).");
@@ -149,7 +149,7 @@ export default function StaffDashboard() {
     } as any).eq('id', id)
   }
 
-  // 4. NO SHOW (Cancel)
+  // 4. NO SHOW (Cancel) (FIXED: Added 'as any')
   const markNoShow = async (id: number | string) => {
     if(!window.confirm("Mark patient as No Show?")) return;
     

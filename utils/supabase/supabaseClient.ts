@@ -1,28 +1,35 @@
 import { createClient } from '@supabase/supabase-js';
 
-// TypeScript interface for the `tickets` table
+// --- UPDATED TICKET TYPE ---
 export type Ticket = {
-  id: number | string; // id may be integer or uuid depending on DB
-  patient_name?: string | null;
-  concern?: string | null;
-  status: 'waiting' | 'in_progress' | 'serving' | 'completed' | 'cancelled' | string;
-  triage_level?: number | null; // numeric priority (e.g., 1 = highest)
-  created_at?: string | null; // ISO timestamp
+  id: number; 
+  created_at: string;
+  patient_name: string;
+  status: string; // 'waiting' | 'serving' | 'completed' | 'cancelled' | 'in_progress'
+
+  // ✅ These are the fields you added that were missing in the definition
+  service_type: string;        
+  room_number: number | null;
+
+  // Optional fields
   service_start_time?: string | null;
   service_end_time?: string | null;
+  triage_level?: number | null;
+  concern?: string | null;
 };
 
-// Minimal Database type for use with supabase-js generics
+// --- UPDATED DATABASE TYPE ---
 export interface Database {
   public: {
     Tables: {
       tickets: {
         Row: Ticket;
         Insert: {
-          id?: string;
+          // Allow inserting these fields
           patient_name: string;
-          status?: Ticket['status'];
-          triage_level?: number;
+          status?: string;
+          service_type?: string; 
+          room_number?: number | null;
           created_at?: string;
         };
         Update: Partial<Ticket>;
@@ -41,6 +48,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. See .env.example');
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  // Add any global options here if needed
-});
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
