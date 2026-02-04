@@ -288,7 +288,7 @@ export default function PatientDashboard() {
                             {isOccupied ? occupants.map((patient) => (
                                 <div key={patient.id} className="flex flex-col items-center w-full animate-in zoom-in-95 duration-300">
                                     {/* UPDATED: Bigger and Bolder Ticket Number */}
-                                    <div className="text-8xl lg:text-9xl font-black text-[#1b4d3e] tracking-tighter leading-none mb-1 drop-shadow-sm">
+                                    <div className="text-xl  font-black text-[#1b4d3e] tracking-tighter leading-none mb-1 drop-shadow-sm">
                                         #{patient.id}
                                     </div>
                                     <div className="text-lg font-black text-slate-700 uppercase truncate max-w-[220px] mb-2">

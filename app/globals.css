@@ -1,13 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  /* This automatically creates 'bg-aldersgate-green' and 'text-aldersgate-green' */
+  --color-aldersgate-green: #1b4d3e;
+  --color-aldersgate-gold: #fcc200;
+
+  /* This automatically creates the 'animate-gold-pulse' utility */
+  --animate-gold-pulse: gold-pulse 2s infinite;
+
+  @keyframes gold-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(252, 194, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0); }
+  }
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 245, 245, 245;
   --background-end-rgb: 255, 255, 255;
-  --aldersgate-green: #1b4d3e; /* Deep Academic Green */
-  --aldersgate-gold: #fcc200;  /* Bright Gold */
 }
 
 body {
@@ -17,15 +28,4 @@ body {
       rgb(var(--background-start-rgb)),
       rgb(var(--background-end-rgb))
     );
-}
-
-/* Custom Animation for "Now Serving" */
-@keyframes gold-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(252, 194, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(252, 194, 0, 0); }
-}
-
-.animate-gold-pulse {
-  animation: gold-pulse 2s infinite;
 }
