@@ -1,3 +1,4 @@
+import Clock from '@/components/clock';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -5,7 +6,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Aldersgate College - Queue System',
+  title: 'Solano SmartQueue',
   description: 'Medical & Health Services Queue',
 };
 
@@ -20,23 +21,22 @@ export default function RootLayout({
       <body className={`${inter.className} h-screen flex flex-col bg-gray-50 overflow-hidden`}>
         
         {/* HEADER */}
-        <header className="bg-[#1b4d3e] text-white shadow-lg border-b-4 border-[#fcc200] shrink-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex flex-col md:flex-row items-center justify-between">
+        <header className="bg-[#1e3a8a] text-white shadow-lg border-b-4 border-[#fcc200] shrink-0 z-50">
+          <div className="px-4 md:px-8 py-3 flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="h-10 w-10 bg-white rounded-full flex items-center justify-center border-2 border-[#fcc200] text-xl shadow-md">
                 🛡️
               </div>
               <div className="text-center md:text-left">
-                <h1 className="text-lg md:text-xl font-bold uppercase tracking-wide text-[#fcc200]">
-                  Aldersgate College
-                </h1>
+            <h1 className="text-3xl font-bold tracking-tight leading-none text-white">Solano <span className="text-[#facc15]">SmartQueue</span></h1>
+
                 <p className="text-[10px] text-green-100 tracking-wider uppercase leading-none">
-                  Medical Services
+                  Rural Health Unit • Nueva Vizcaya
                 </p>
               </div>
             </div>
             <div className="mt-2 md:mt-0 hidden md:block text-xs text-green-200 italic">
-              "Seek Ye The Truth • Serve The People"
+              <Clock/>
             </div>
           </div>
         </header>
@@ -47,8 +47,8 @@ export default function RootLayout({
         </main>
 
         {/* FOOTER - Added pb-8 to lift the text up */}
-        <footer className="bg-[#153a2f] text-green-400 py-3 pb-8 text-center text-xs border-t border-green-900 shrink-0">
-          <p>© {new Date().getFullYear()} Aldersgate College, Inc. | Solano, Nueva Vizcaya</p>
+        <footer className="bg-[#1e3a8a] text-[#facc15] py-3 text-center text-xs border-t border-green-900 shrink-0">
+          <p>© {new Date().getFullYear()} Solano SmartQueue</p>
         </footer>
       </body>
     </html>

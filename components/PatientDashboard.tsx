@@ -60,10 +60,13 @@ export default function PatientDashboard() {
     setTickets(data ?? []);
   };
 
-  useEffect(() => {
+  useEffect(()=>{
     fetchTickets();
     fetchRooms(); // Initial Load
-    
+
+  }, [])
+
+  useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
 
     // Subscribe to Ticket Updates
@@ -204,11 +207,10 @@ export default function PatientDashboard() {
       {/* ------------------------------------------------ */}
       {/* LEFT COLUMN: QUEUE + FILTERS (30% Width)         */}
       {/* ------------------------------------------------ */}
-      <div className="w-[30%] flex flex-col bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
+      <div className="w-[30%] flex flex-col bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden h-[calc(100vh-135px)]">
          {/* HEADER - UPDATED TO SOLANO THEME */}
          <div className="bg-[#1e3a8a] border-b-4 border-[#facc15] p-3 shrink-0">
-            <h1 className="text-3xl font-bold tracking-tight leading-none text-white">Solano <span className="text-[#facc15]">SmartQueue</span></h1>
-              <p className="text-[11px] text-blue-200 font-bold uppercase tracking-[0.2em] mt-1 mb-3">Rural Health Unit • Nueva Vizcaya</p>
+            <h1 className="text-xl font-bold tracking-tight leading-none text-white mb-3">Waiting List</h1>
             
             <div className="flex items-center gap-2 mb-2">
                 <span className="text-[10px] font-bold uppercase text-blue-200">Filter:</span>
@@ -287,7 +289,7 @@ export default function PatientDashboard() {
       {/* ------------------------------------------------ */}
       {/* RIGHT COLUMN: 3x2 ROOM GRID + ANALYTICS (70%)    */}
       {/* ------------------------------------------------ */}
-      <div className="flex-1 flex flex-col h-[570px] min-h-0 bg-slate-100 rounded-xl border border-slate-300 p-2 shadow-inner">
+      <div className="flex-1 flex flex-col h-[570px] min-h-0 bg-slate-100 rounded-xl border border-slate-300 p-2 shadow-inner ">
           
           {/* HEADER with PAGINATION */}
           <div className="flex justify-between items-center mb-2 px-1 shrink-0">
@@ -404,7 +406,7 @@ export default function PatientDashboard() {
       </div>
       
       {/* Demo Button */}
-      <button onClick={() => setIsSimulating(!isSimulating)} className={`fixed bottom-4 right-4 z-50 px-3 py-1 rounded-full font-bold shadow-lg text-[10px] uppercase tracking-wider transition-all opacity-20 hover:opacity-100 ${isSimulating ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+      <button onClick={() => setIsSimulating(!isSimulating)} className={`fixed bottom-2 right-4 z-50 px-3 py-1 rounded-full font-bold shadow-lg text-[10px] uppercase tracking-wider transition-all opacity-20 hover:opacity-100 ${isSimulating ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
           {isSimulating ? 'Stop Demo' : 'Demo'}
       </button>
 
