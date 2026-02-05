@@ -3,13 +3,27 @@
 import { useState, useEffect } from 'react';
 
 export default function Clock() {
-  const [time, setTime] = useState(new Date());
+  // 1. Add a "mounted" state
+  const [mounted, setMounted] = useState(false);
+  const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Update every second
+    // 2. Set mounted to true immediately on the client
+    setMounted(true);
+    // Initialize time immediately on client to avoid delay
+    setTime(new Date());
+
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // 3. Return NULL during server rendering
+  // This prevents the "Server text didn't match client" error
+  if (!mounted || !time) {
+    return null; 
+    // Optional: Return an empty div of the same size to prevent layout shift
+    // return <div className="mt-2 md:mt-0 hidden md:flex w-32 h-10" />;
+  }
 
   return (
     <div className="mt-2 md:mt-0 hidden md:flex flex-col items-end font-medium text-green-200 tracking-wider">
