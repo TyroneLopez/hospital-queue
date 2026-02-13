@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase, Ticket } from '../utils/supabase/supabaseClient';
-import { calculatePredictedWaitTime, CompletedTicket } from '../utils/prediction';
+import { calculatePredictedWaitTime, CompletedTicket } from '../utils/predictionEngine';
 
 type QueueStatusProps = {
   /** The current user's ticket id (optional) */
