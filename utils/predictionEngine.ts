@@ -101,7 +101,7 @@ export const getDynamicPrediction = (data: {x: number, y: number}[], targetTimeO
     let ewmaError = 0;
 
     data.forEach(p => {
-        polyError += Math.paw(p.y - predictPoly(polyCoeffs, p.x), 2);
+        polyError += Math.pow(p.y - predictPoly(polyCoeffs, p.x), 2);
         ewmaError += Math.pow(p.y - ewmaPrediction, 2); // EWMA is a flat line prediction here
     });
 

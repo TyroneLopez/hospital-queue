@@ -237,8 +237,8 @@ export default function StaffDashboard() {
               S
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Solano <span className="text-[#facc15]">SmartQueue</span></h1>
-              <p className="text-[10px] text-blue-100 font-medium uppercase tracking-wider">Rural Health Unit Management</p>
+              <h1 className="text-xl font-bold tracking-tight">SmartQueue</h1>
+              <p className="text-[10px] text-blue-100 font-medium uppercase tracking-wider">Nueva Vizcaya State University</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

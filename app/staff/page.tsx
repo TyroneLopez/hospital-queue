@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { supabase, Ticket } from '../../utils/supabase/supabaseClient'
-// FIX: Import the NEW functions
 import { runAutoCall, runAutoComplete, generateRandomPatient, Room } from '../../utils/autoPilot'
 
 export default function StaffDashboard() {
@@ -12,10 +11,13 @@ export default function StaffDashboard() {
   const [rooms, setRooms] = useState<Room[]>([]) 
   const [activeRooms, setActiveRooms] = useState<Record<number, boolean>>({});
   
+  // 👇 NEW: State for dynamic services
+  const [serviceOptions, setServiceOptions] = useState<any[]>([]);
+
   // --- SIMULATION STATES ---
-  const [autoPilotRooms, setAutoPilotRooms] = useState<Record<number, boolean>>({}); // Auto-Call (Robot)
-  const [isDemoArrivals, setIsDemoArrivals] = useState(false); // Arrivals
-  const [isAutoComplete, setIsAutoComplete] = useState(false); // [NEW] Auto-Complete
+  const [autoPilotRooms, setAutoPilotRooms] = useState<Record<number, boolean>>({});
+  const [isDemoArrivals, setIsDemoArrivals] = useState(false); 
+  const [isAutoComplete, setIsAutoComplete] = useState(false); 
 
   // ROOM MANAGER
   const [showRoomManager, setShowRoomManager] = useState(false)
@@ -32,10 +34,19 @@ export default function StaffDashboard() {
   const [servingSearch, setServingSearch] = useState('')
 
   // --- DATA FETCHING ---
+
+  // 👇 NEW: Fetch services from Supabase
+  const fetchServices = async () => {
+    const { data } = await supabase.from('services').select('*');
+    if (data) {
+      setServiceOptions(data);
+    }
+  };
+
   const fetchRooms = async () => {
     const { data } = await supabase.from('rooms').select('*').order('position', { ascending: true });
     if (data) {
-        setRooms(data);
+        setRooms(data as any); 
         const statusMap: Record<number, boolean> = {};
         data.forEach((r: any) => statusMap[r.id] = r.is_active);
         setActiveRooms(statusMap);
@@ -51,15 +62,13 @@ export default function StaffDashboard() {
   };
 
   const fetchTickets = async () => {
-    // FIX: Only fetch 'waiting', 'serving', or 'in_progress'
-    // This reduces payload from 913 rows -> ~20 rows (Constant size O(1))
     const { data } = await supabase
         .from('tickets')
         .select('*')
         .in('status', ['waiting', 'serving', 'in_progress']) 
         .order('created_at', { ascending: true });
 
-    if (data) setTickets(data);
+    if (data) setTickets(data as any);
   }
 
   // --- LOGIC ENGINE ---
@@ -68,25 +77,20 @@ export default function StaffDashboard() {
     let callInterval: NodeJS.Timeout;
     let completeInterval: NodeJS.Timeout;
 
-    // 1. ARRIVAL ENGINE (Footer Button)
     if (isDemoArrivals && rooms.length > 0) {
         arrivalInterval = setInterval(() => {
             generateRandomPatient(rooms);
         }, 3000);
     }
 
-    // 2. AUTO-COMPLETE ENGINE (Footer Button)
     if (isAutoComplete) {
         completeInterval = setInterval(() => {
             runAutoComplete(tickets);
         }, 2000);
     }
 
-    // 3. AUTO-CALL ENGINE (Room Robot Toggles)
-    // Runs constantly to check if any room has robot enabled
     callInterval = setInterval(() => {
         const enabledAutoRooms = rooms.filter(r => activeRooms[r.id] && autoPilotRooms[r.id]);
-        
         if (enabledAutoRooms.length > 0) {
             runAutoCall(tickets, enabledAutoRooms, activeRooms);
         }
@@ -103,14 +107,20 @@ export default function StaffDashboard() {
   const handleAddRoom = async () => {
     if (!newRoom.name || !newRoom.service) return alert("Required fields missing")
     const nextPos = rooms.length + 1;
-    await supabase.from('rooms').insert([{ ...newRoom, is_active: true, position: nextPos }])
+    
+    await (supabase.from('rooms') as any).insert([{ ...newRoom, is_active: true, position: nextPos }])
+    
     setNewRoom({ name: '', service: '', capacity: 1 })
     fetchRooms();
   }
 
   const handleUpdateRoom = async () => {
     if (!editingRoomId) return;
-    await supabase.from('rooms').update({ name: newRoom.name, service: newRoom.service, capacity: newRoom.capacity }).eq('id', editingRoomId);
+    
+    await (supabase.from('rooms') as any)
+      .update({ name: newRoom.name, service: newRoom.service, capacity: newRoom.capacity })
+      .eq('id', editingRoomId);
+
     setNewRoom({ name: '', service: '', capacity: 1 });
     setEditingRoomId(null);
     fetchRooms();
@@ -129,7 +139,8 @@ export default function StaffDashboard() {
   const handleDeleteRoom = async (id: number) => {
     if (!confirm("Delete?")) return;
     if (editingRoomId === id) cancelEdit();
-    await supabase.from('rooms').delete().eq('id', id)
+    
+    await (supabase.from('rooms') as any).delete().eq('id', id)
     fetchRooms();
   }
 
@@ -142,8 +153,9 @@ export default function StaffDashboard() {
     dragOverItem.current = null;
     setRooms(_rooms);
     const updates = _rooms.map((room, index) => ({ id: room.id, position: index + 1 }));
+    
     for (const update of updates) {
-        await supabase.from('rooms').update({ position: update.position }).eq('id', update.id);
+        await (supabase.from('rooms') as any).update({ position: update.position }).eq('id', update.id);
     }
   };
 
@@ -151,7 +163,8 @@ export default function StaffDashboard() {
       const newStatus = !activeRooms[roomId];
       setActiveRooms(prev => ({ ...prev, [roomId]: newStatus }));
       if (!newStatus) setAutoPilotRooms(prev => ({ ...prev, [roomId]: false }));
-      await supabase.from('rooms').update({ is_active: newStatus }).eq('id', roomId);
+      
+      await (supabase.from('rooms') as any).update({ is_active: newStatus }).eq('id', roomId);
   };
 
   const toggleAutoPilot = (roomId: number) => {
@@ -168,7 +181,8 @@ export default function StaffDashboard() {
               rooms.forEach(r => newMap[r.id] = newState);
               setActiveRooms(newMap);
               setAutoPilotRooms({});
-              await supabase.from('rooms').update({ is_active: newState }).gt('id', 0);
+              
+              await (supabase.from('rooms') as any).update({ is_active: newState }).gt('id', 0);
           }
       } else {
           toggleRoom(selectedRoomId);
@@ -179,6 +193,7 @@ export default function StaffDashboard() {
   useEffect(() => {
     fetchTickets();
     fetchRooms();
+    fetchServices(); // 👈 NEW: Called here
     const t = setInterval(() => setNow(new Date()), 1000);
     const sub1 = supabase.channel('st1').on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, fetchTickets).subscribe();
     const sub2 = supabase.channel('sr1').on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, fetchRooms).subscribe();
@@ -218,19 +233,30 @@ export default function StaffDashboard() {
     if (!targetRoom || !activeRooms[targetRoom.id]) return alert("Room unavailable");
     const count = tickets.filter(t => (t.status === 'serving' || t.status === 'in_progress') && t.room_number === targetRoom.id).length;
     if (count >= targetRoom.capacity) return alert("Room Full");
-    await supabase.from('tickets').update({ status: 'serving', room_number: targetRoom.id, service_start_time: new Date().toISOString() } as any).eq('id', ticket.id);
+    
+    await (supabase.from('tickets') as any)
+        .update({ status: 'serving', room_number: targetRoom.id, service_start_time: new Date().toISOString() })
+        .eq('id', ticket.id);
   };
 
   const finishTicket = async (id: number | string) => {
-    await supabase.from('tickets').update({ status: 'completed', service_end_time: new Date().toISOString() } as any).eq('id', id)
+    await (supabase.from('tickets') as any)
+        .update({ status: 'completed', service_end_time: new Date().toISOString() })
+        .eq('id', id)
   }
   const returnToQueue = async (id: number | string) => {
     if (!window.confirm("Return?")) return;
-    await supabase.from('tickets').update({ status: 'waiting', room_number: null } as any).eq('id', id)
+    
+    await (supabase.from('tickets') as any)
+        .update({ status: 'waiting', room_number: null })
+        .eq('id', id)
   }
   const markNoShow = async (id: number | string) => {
     if(!window.confirm("No Show?")) return;
-    await supabase.from('tickets').update({ status: 'cancelled', service_end_time: new Date().toISOString() } as any).eq('id', id)
+    
+    await (supabase.from('tickets') as any)
+        .update({ status: 'cancelled', service_end_time: new Date().toISOString() })
+        .eq('id', id)
   }
 
   return (
@@ -242,8 +268,8 @@ export default function StaffDashboard() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#1e3a8a] font-black text-xl border-2 border-[#facc15]">S</div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Solano <span className="text-[#facc15]">SmartQueue</span></h1>
-              <p className="text-[10px] text-blue-100 font-medium uppercase tracking-wider">Rural Health Unit Management</p>
+              <h1 className="text-xl font-bold tracking-tight">SmartQueue</h1>
+              <p className="text-[10px] text-blue-100 font-medium uppercase tracking-wider">Nueva Vizcaya State University</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -304,7 +330,24 @@ export default function StaffDashboard() {
                 </div>
                 <div className={`flex flex-wrap gap-2 items-end p-3 rounded border shadow-sm inline-flex transition-colors ${editingRoomId ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'}`}>
                     <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Room Name</label><input placeholder="e.g. Table 5" className="text-xs border p-2 rounded w-32 outline-none focus:border-[#1e3a8a]" value={newRoom.name} onChange={e => setNewRoom({...newRoom, name: e.target.value})} /></div>
-                    <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Service Type</label><select className="text-xs border p-2 rounded w-40 outline-none focus:border-[#1e3a8a]" value={newRoom.service} onChange={e => setNewRoom({...newRoom, service: e.target.value})}><option value="">Select...</option><option value="Triage / Vitals">Triage / Vitals</option><option value="Admin / Permits">Admin / Permits</option><option value="Consultation">Consultation</option><option value="Dental">Dental</option></select></div>
+                    
+                    {/* 👇 THIS IS THE UPDATED DYNAMIC SECTION */}
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 block mb-1">Service Type</label>
+                      <select 
+                        className="text-xs border p-2 rounded w-40 outline-none focus:border-[#1e3a8a]" 
+                        value={newRoom.service} 
+                        onChange={e => setNewRoom({...newRoom, service: e.target.value})}
+                      >
+                        <option value="">Select...</option>
+                        {serviceOptions.map((service) => (
+                          <option key={service.id} value={service.name}>
+                            {service.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
                     <div><label className="text-[10px] font-bold text-slate-400 block mb-1">Cap.</label><input type="number" className="text-xs border p-2 rounded w-16 outline-none focus:border-[#1e3a8a]" value={newRoom.capacity} onChange={e => setNewRoom({...newRoom, capacity: parseInt(e.target.value)})} /></div>
                     {editingRoomId ? (<><button onClick={handleUpdateRoom} className="bg-[#1e3a8a] text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-[#172554] shadow-md">Save</button><button onClick={cancelEdit} className="bg-slate-200 text-slate-600 px-3 py-2 rounded text-xs font-bold uppercase hover:bg-slate-300">Cancel</button></>) : (<button onClick={handleAddRoom} className="bg-[#1e3a8a] text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-[#172554]">+ Add Room</button>)}
                 </div>

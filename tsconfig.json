@@ -13,6 +13,10 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    
+    // 👇 ADD THIS LINE HERE!
+    "baseUrl": ".", 
+    
     "plugins": [
       {
         "name": "next"
